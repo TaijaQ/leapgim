@@ -21,13 +21,6 @@ class ActionController
         # @mouseState = 
         #     left : "up",
         #     right : "down"
-        # Add an event listener
-        document.addEventListener 'leapgim-update', (e) ->
-          console.log e.detail
-          return
-        # Create the event
-        event = new CustomEvent('leapgim-update', 'detail': 'Example of an event')
-        window.dispatchEvent event
         
     mouseMove: (handModel) =>
         screenSize = @robot.getScreenSize()
