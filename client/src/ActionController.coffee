@@ -18,30 +18,39 @@ class ActionController
         @robot = require 'robotjs'
         @keyboardModel = 
             test: false
-        # @mouseState = 
-        #     left : "up",
-        #     right : "down"
+        @mouseState = 
+            left : "up",
+            right : "down"
         
+    audioNotification: (clip) ->
+        audio = new Audio(clip)
+        audio.play()
+
     mouseMove: (handModel) =>
         screenSize = @robot.getScreenSize()
-        #console.log "Screen size: " + screenSize.width + "," + screenSize.height
         moveTo = 
             x: handModel.position.x * screenSize.width
             y: handModel.position.y * screenSize.height
-        #console.log "Move to: " + moveTo.x + "," + moveTo.y
         @robot.moveMouse(moveTo.x, moveTo.y)
+
     # down: up|down, button: left|right
     mouseButton: (down, button) =>
-        @robot.mouseToggle down, button
-        # # Skip action if we're valready in the correct state
-        # unless (@mouseState[button] == down)
+        if(@mouseState.button != down)
+            @mouseState.button = down
+            @robot.mouseToggle down, button
+            if(down == 'down')
+                @audioNotification 'asset/audio/mousedown.wav'
+            else
+                @audioNotification 'asset/audio/mouseup.wav'
 
     keyboardTest: (down) =>
+        audio = 'asset/audio/soft_delay.ogg'
         if(down == 'down')
             if(@keyboardModel.test is false)
                 @keyboardModel.test = true
                 @robot.keyToggle 't', 'down', 'command'
                 @robot.keyToggle 't', 'up', 'command'
+                @audioNotification(audio)
         else if(down is 'up')
             if(@keyboardModel.test is true)
                 @keyboardModel.test = false
@@ -137,3 +146,5 @@ socket.monitor 500, 0
 
 console.log "Connect to " + config.socket
 socket.connect config.socket
+
+window.actionController = actionController
