@@ -16,9 +16,19 @@ console.log "Config: ", config
 class ActionController
     constructor: ->
         @robot = require 'robotjs'
+        @keyboardModel = 
+            test: false
         # @mouseState = 
         #     left : "up",
         #     right : "down"
+        # Add an event listener
+        document.addEventListener 'leapgim-update', (e) ->
+          console.log e.detail
+          return
+        # Create the event
+        event = new CustomEvent('leapgim-update', 'detail': 'Example of an event')
+        window.dispatchEvent event
+        
     mouseMove: (handModel) =>
         screenSize = @robot.getScreenSize()
         #console.log "Screen size: " + screenSize.width + "," + screenSize.height
@@ -31,12 +41,23 @@ class ActionController
     mouseButton: (down, button) =>
         @robot.mouseToggle down, button
         # # Skip action if we're valready in the correct state
-        # unless (@mouseState[button] == down)        
+        # unless (@mouseState[button] == down)
+
+    keyboardTest: (down) =>
+        if(down == 'down')
+            if(@keyboardModel.test is false)
+                @keyboardModel.test = true
+                @robot.keyToggle 't', 'down', 'command'
+                @robot.keyToggle 't', 'up', 'command'
+        else if(down is 'up')
+            if(@keyboardModel.test is true)
+                @keyboardModel.test = false
 
     parseGestures: (model) =>
 
         console.log "Parsing gestures.."
-        console.log "model: ", model
+        console.log "Keyboard model test mutex: " + @keyboardModel.test
+        #console.log "model: ", model
 
         handModel = model[0]
         for handModel in model
@@ -53,6 +74,14 @@ class ActionController
                 return
             checkClick 'left', 'indexFinger'
             checkClick 'right', 'ringFinger'
+
+            if (handModel.pinchStrength >  0.5 and handModel.pinchingFinger =='pinky')
+                @keyboardTest('down')
+                console.log "Keyboard test down"
+            else if (handModel.pinchStrength < 0.5)
+                @keyboardTest('up')
+                console.log "Keyboard test up"
+
 
             # Mouse Move test
             position = handModel.position
