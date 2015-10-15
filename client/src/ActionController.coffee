@@ -19,7 +19,11 @@ class ActionController
         @mouseState = 
             left : "up",
             right : "up"
-        
+        # Timestamp from previous message
+        @timestamp = false
+        # Release mouse buttons etc after a certain time has lapsed
+        @timeout = 2000
+
     audioNotification: (clip) ->
         audio = new Audio(clip)
         audio.play()
@@ -50,7 +54,7 @@ class ActionController
 
         console.log "Parsing gestures.."
         #console.log "model: ", model
-        
+
         for handModel in model.hands
             console.log "handModel: ", handModel
 
