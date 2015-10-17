@@ -1,1 +1,31 @@
 socket: 'tcp://127.0.0.1:8282'
+timeout: 60
+actions:
+    leftClick: 
+        type: 'mouse'
+        action: 'hold'
+        tearDown: 'release'
+        target: 'left'
+    rightClick: 
+        type: 'mouse'
+        action: 'hold'
+        tearDown: 'release'
+        target: 'right'
+    mouseMove:
+        type: 'mouse'
+        action: 'move'
+    holdMouse:
+        type: 'mouse'
+        action: 'hold'
+signs:
+    pinchIndex:
+        minPinchStrength: 0.5
+        pincher: 'indexFinger'
+    pinchRing:
+        minPinchStrength: 0.5
+        pincher: 'ringFinger'
+    grab:
+        minGrabStrength: 0.5
+recipes:
+    leftClick: pinchIndex
+    rightClick: pinchRing
