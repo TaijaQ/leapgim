@@ -1,5 +1,5 @@
 socket: 'tcp://127.0.0.1:8282'
-timeout: 60
+timeout: 500
 actions:
     leftClick: 
         type: 'mouse'
@@ -26,6 +26,12 @@ signs:
         pincher: 'ringFinger'
     grab:
         minGrabStrength: 0.5
+        duration: 2
 recipes:
-    leftClick: pinchIndex
-    rightClick: pinchRing
+    leftClick: 
+        sign: 'pinchIndex'
+    rightClick: 
+        sign: 'pinchRing'
+    mouseGrab:
+        sign: 'grab'
+        action: 'holdMouse'
