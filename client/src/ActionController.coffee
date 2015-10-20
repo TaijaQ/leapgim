@@ -84,11 +84,11 @@ class ActionController
         audio = new Audio(clip)
         audio.play()
 
-    mouseMove: (handModel) =>
+    mouseMove: (position) =>
         screenSize = @robot.getScreenSize()
         moveTo =
-            x: handModel.position.x * screenSize.width
-            y: handModel.position.y * screenSize.height
+            x: position.x * screenSize.width
+            y: position.y * screenSize.height
         @robot.moveMouse(moveTo.x, moveTo.y)
 
     # down: up|down, button: left|right
@@ -106,11 +106,28 @@ class ActionController
         if(down == 'up')
             @robot.mouseToggle down, button
 
+    executeAction: (cmd) =>
+        console.log "Execute action: ", cmd
+        if(cmd.type == 'mouse')
+            if(cmd.action == 'hold')
+                button = cmd.target
+                @mouseButton 'down', button
+            if(cmd.action == 'release')
+                button = cmd.target
+                @mouseButton 'up', button
+            if(cmd.action == 'move')
+                console.log "Moooove"
+                console.log "Position: ", @position
+                @mouseMove(@position)
+
     parseGestures: (model) =>
 
         console.log "Parsing gestures.."
         #console.log "model: ", model
         #console.log "config.signs: ", config.signs
+
+        # Mouse tracking quick'n'dirty
+        @position = model.hands[0].position
 
         #@timestamp = model.timestamp
         # TODO: Implement processSign and properly figure out this shit
@@ -126,6 +143,14 @@ class ActionController
             if(@assertSign(signData, model))
                 console.log "Assert ok for " + signName
                 validSigns.push signName
+
+        for recipeName, recipe of config.recipes
+            if(recipe.sign in validSigns)
+                console.log "Trigger recipe action: " + recipe.action
+                console.log "Config actions: ", config.actions
+                console.log "Interpolated: ", config.actions[recipe.action]
+                @executeAction(config.actions[recipe.action])
+                return
 
 actionController = new ActionController
 socket = zmq.socket('sub')

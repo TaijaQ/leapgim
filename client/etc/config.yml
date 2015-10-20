@@ -26,11 +26,14 @@ signs:
         pinch:
             pincher: 'ringFinger'
             min: 0.5
-    grab:
+    freeHand:
         grab:
-            min: 0.5
-        duration:
-            min: 200
+            max: 0.5
+    # grab:
+    #     grab:
+    #         min: 0.5
+    #     duration:
+    #         min: 200
 recipes:
     leftClick:
         sign: 'pinchIndex'
@@ -39,3 +42,6 @@ recipes:
     mouseGrab:
         sign: 'grab'
         action: 'holdMouse'
+    mouseMove:
+        action: 'mouseMove'
+        sign: 'freeHand'
