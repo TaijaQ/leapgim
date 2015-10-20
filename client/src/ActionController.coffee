@@ -150,7 +150,6 @@ class ActionController
                 console.log "Config actions: ", config.actions
                 console.log "Interpolated: ", config.actions[recipe.action]
                 @executeAction(config.actions[recipe.action])
-                return
 
 actionController = new ActionController
 socket = zmq.socket('sub')

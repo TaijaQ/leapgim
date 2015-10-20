@@ -11,6 +11,22 @@ actions:
         action: 'hold'
         tearDown: 'release'
         target: 'right'
+    mouse1Up:
+        type: 'mouse'
+        action: 'release'
+        target: 'left'
+    mouse2Up:
+        type: 'mouse'
+        action: 'release'
+        target: 'right'
+    mouse1Down:
+        type: 'mouse'
+        action: 'down'
+        target: 'left'
+    mouse2Down:
+        type: 'mouse'
+        action: 'down'
+        target: 'right'
     mouseMove:
         type: 'mouse'
         action: 'move'
@@ -26,22 +42,25 @@ signs:
         pinch:
             pincher: 'ringFinger'
             min: 0.5
+    unpinch:
+        pinch:
+            max: 0.5
     freeHand:
         grab:
             max: 0.5
-    # grab:
-    #     grab:
-    #         min: 0.5
-    #     duration:
-    #         min: 200
 recipes:
-    leftClick:
+    holdMouse1:
         sign: 'pinchIndex'
-    rightClick:
+        action: 'mouse1Down'
+    holdMouse2:
         sign: 'pinchRing'
-    mouseGrab:
-        sign: 'grab'
-        action: 'holdMouse'
-    mouseMove:
-        action: 'mouseMove'
-        sign: 'freeHand'
+        action: 'mouse2Down'
+    releaseMouse1:
+        sign: 'unpinch'
+        action: 'mouse1Up'
+    releaseMouse2:
+        sign: 'unpinch'
+        action: 'mouse2Up'
+    # mouseMove:
+    #     action: 'mouseMove'
+    #     sign: 'freeHand'
