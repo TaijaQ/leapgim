@@ -1,12 +1,12 @@
 socket: 'tcp://127.0.0.1:8282'
 timeout: 500
 actions:
-    leftClick: 
+    leftClick:
         type: 'mouse'
         action: 'hold'
         tearDown: 'release'
         target: 'left'
-    rightClick: 
+    rightClick:
         type: 'mouse'
         action: 'hold'
         tearDown: 'release'
@@ -19,18 +19,22 @@ actions:
         action: 'hold'
 signs:
     pinchIndex:
-        minPinchStrength: 0.5
-        pincher: 'indexFinger'
+        pinch:
+            pincher: 'indexFinger'
+            min: 0.5
     pinchRing:
-        minPinchStrength: 0.5
-        pincher: 'ringFinger'
+        pinch:
+            pincher: 'ringFinger'
+            min: 0.5
     grab:
-        minGrabStrength: 0.5
-        duration: 2
+        grab:
+            min: 0.5
+        duration:
+            min: 200
 recipes:
-    leftClick: 
+    leftClick:
         sign: 'pinchIndex'
-    rightClick: 
+    rightClick:
         sign: 'pinchRing'
     mouseGrab:
         sign: 'grab'

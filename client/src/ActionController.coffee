@@ -10,19 +10,75 @@ console.log "Config: ", config
 #
 # Action Controller
 #
-# Action controller's job is to recieve "leapgim frames" from the frame 
-# controller. 
+# Action controller's job is to recieve "leapgim frames" from the frame
+# controller.
 #
 class ActionController
     constructor: ->
         @robot = require 'robotjs'
-        @mouseState = 
+        @signRecord = {}
+        ## TODO TODO
+        #for own sign Object.keys(config.signs)
+        @mouseState =
             left : "up",
             right : "up"
-        # Timestamp from previous message
-        @timestamp = false
-        # Release mouse buttons etc after a certain time has lapsed
-        @timeout = 2000
+        # Microseconds. Timestamp from previous message.
+        @serverTimestamp = false
+        # Milliseconds. Release mouse buttons if no new data is received during this time frame.
+        @timeout = config.timeout
+        # UTC timestamp in milliseconds
+        @clientTimestamp
+        # Timeout event listener ID
+        @timeoutID = false
+
+    assertSign: (sign, frameData) =>
+
+        #console.log "Assert sign: ", sign, frameData
+
+        # Assert true unless a filter statement is found
+        sign_ok = true
+
+        for handModel in frameData.hands
+            #console.log "handModel: ", handModel
+            if(sign.grab)
+                grabStrength = handModel.grabStrength
+                if(sign.grab.min)
+                    if(grabStrength < sign.grab.min)
+                        sign_ok = false
+                if(sign.grab.max)
+                    if(grabStrength > sign.grab.max)
+                        sign_ok = false
+            if(sign.pinch)
+                pinchStrength = handModel.pinchStrength
+                pincher = handModel.pinchingFinger
+
+                if(sign.pinch.pincher)
+                    if (sign.pinch.pincher != pincher)
+                        sign_ok = false
+                if(sign.pinch.min)
+                    if(pinchStrength < sign.pinch.min)
+                        sign_ok = false
+                if(sign.pinch.max)
+                    if(pinchStrength > sign.pinch.max)
+                        sign_ok = false
+            if(sign.extendedFingers)
+                extendedFingers = sign.extendedFingers
+                if(extendedFingers.indexFinger is not undefined)
+                    if extendedFingers.indexFinger != handModel.extendedFingers.indexFinger
+                        sign_ok = false
+                if(extendedFingers.middleFinger is not undefined)
+                    if extendedFingers.middleFinger != handModel.extendedFingers.middleFinger
+                        sign_ok = false
+                if(extendedFingers.ringFinger is not undefined)
+                    if extendedFingers.ringFinger != handModel.extendedFingers.ringFinger
+                        sign_ok = false
+                if(extendedFingers.pinky is not undefined)
+                    if extendedFingers.pinky != handModel.extendedFingers.ringFinger
+                        sign_ok = false
+                if(extendedFingers.thumb is not undefined)
+                    if extendedFingers.thumb != handModel.extendedFingers.thumb
+                        sign_ok = false
+        return sign_ok
 
     audioNotification: (clip) ->
         audio = new Audio(clip)
@@ -30,7 +86,7 @@ class ActionController
 
     mouseMove: (handModel) =>
         screenSize = @robot.getScreenSize()
-        moveTo = 
+        moveTo =
             x: handModel.position.x * screenSize.width
             y: handModel.position.y * screenSize.height
         @robot.moveMouse(moveTo.x, moveTo.y)
@@ -54,30 +110,22 @@ class ActionController
 
         console.log "Parsing gestures.."
         #console.log "model: ", model
+        #console.log "config.signs: ", config.signs
 
-        for handModel in model.hands
-            console.log "handModel: ", handModel
+        #@timestamp = model.timestamp
+        # TODO: Implement processSign and properly figure out this shit
+        # Timeout handling
+        #if(@timer)
+        #    clearTimeout(@timer)
+        #@timer = setTimeout()
 
-            # Demo mouse clicking
-            checkClick = (button, pinchingFinger) =>
-                if (handModel.pinchStrength >  0.5 and handModel.pinchingFinger == pinchingFinger)
-                    @mouseButton "down", button
-                    console.log "Mouse button " + button + "down"
-                else if (handModel.pinchStrength < 0.5)
-                    @mouseButton "up", button
-                    console.log "Mouse button " + button + "up"
-                return
-            checkClick 'left', 'indexFinger'
-            checkClick 'right', 'ringFinger'
+        validSigns = []
 
-            # # Mouse Lock
-            if (handModel.grabStrength > 0.5)
-                holdMouse = true
-
-            frameIsEmpty = model is null or model.length is 0
-            unless holdMouse is true or frameIsEmpty 
-                @mouseMove(handModel)
-
+        for signName,signData of config.signs
+            #console.log "Assert " + signName
+            if(@assertSign(signData, model))
+                console.log "Assert ok for " + signName
+                validSigns.push signName
 
 actionController = new ActionController
 socket = zmq.socket('sub')
@@ -119,7 +167,7 @@ window.actionController = actionController # For debugging
 
 
 ##
-# Connection 
+# Connection
 ##
 socket.on 'connect', (fd, ep) ->
     console.log 'connect, endpoint:', ep
