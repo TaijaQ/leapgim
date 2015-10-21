@@ -30,6 +30,7 @@ class ActionController
         @clientTimestamp
         # Timeout event listener ID
         @timeoutID = false
+        @tearDownQueue = []
 
     assertSign: (sign, frameData) =>
 
@@ -144,12 +145,17 @@ class ActionController
                 console.log "Assert ok for " + signName
                 validSigns.push signName
 
+        # TODO: Figure out tear down mechanism
+
         for recipeName, recipe of config.recipes
             if(recipe.sign in validSigns)
                 console.log "Trigger recipe action: " + recipe.action
                 console.log "Config actions: ", config.actions
-                console.log "Interpolated: ", config.actions[recipe.action]
-                @executeAction(config.actions[recipe.action])
+                action = config.actions[recipe.action]
+                console.log "Interpolated: ", action
+                @executeAction(action)
+                @tearDownQueue.push(action.tearDown)
+
 
 actionController = new ActionController
 socket = zmq.socket('sub')

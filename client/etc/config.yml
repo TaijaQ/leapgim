@@ -4,12 +4,12 @@ actions:
     leftClick:
         type: 'mouse'
         action: 'hold'
-        tearDown: 'release'
+        tearDown: 'mouse1Up'
         target: 'left'
     rightClick:
         type: 'mouse'
         action: 'hold'
-        tearDown: 'release'
+        tearDown: 'mouse2Up'
         target: 'right'
     mouse1Up:
         type: 'mouse'
@@ -55,12 +55,6 @@ recipes:
     holdMouse2:
         sign: 'pinchRing'
         action: 'mouse2Down'
-    releaseMouse1:
-        sign: 'unpinch'
-        action: 'mouse1Up'
-    releaseMouse2:
-        sign: 'unpinch'
-        action: 'mouse2Up'
-    # mouseMove:
-    #     action: 'mouseMove'
-    #     sign: 'freeHand'
+    mouseMove:
+        action: 'mouseMove'
+        sign: 'freeHand'
