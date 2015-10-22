@@ -11,7 +11,7 @@
     "rebuild-zmq": "( cd node_modules/zmq && nw-gyp configure rebuild --target=0.12.3 )",
     "install": "npm run rebuild-zmq; npm run rebuild-robotjs",
     "postinstall": "npm run build",
-    "build": "coffee -o lib src/ActionController.coffee",
+    "build": "coffee -o lib src/*.coffee",
     "nw": "node_modules/nw/bin/nw",
     "start": "nw ."
   },
