@@ -8,7 +8,10 @@ config = window.config
 
 console.log "Config: ", config
 
-actionController = new window.ActionController
+window.feedback = new window.FeedbackController
+window.actionHero = new window.ActionController
+window.translator = new window.GestureController
+
 socket = zmq.socket('sub')
 
 ##
@@ -44,7 +47,6 @@ socket.on 'disconnect', (fd, ep) ->
 
 console.log 'Start monitoring...'
 socket.monitor 500, 0
-window.actionController = actionController # For debugging
 
 
 ##
@@ -59,7 +61,7 @@ socket.on 'connect', (fd, ep) ->
 
         if(topic.toString() == 'update')
             model = JSON.parse str_message
-            actionController.parseGestures(model)
+            translator.parseGestures(model)
         return
     return
 
