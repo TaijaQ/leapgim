@@ -17,4 +17,7 @@ class FeedbackController
     mouseStatus: (elem, status) ->
         document.getElementById(elem).innerHTML = status
 
+    time: (elapsed) ->
+        document.getElementById('timer').innerHTML = elapsed
+
 window.FeedbackController = FeedbackController

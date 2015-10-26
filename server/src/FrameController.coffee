@@ -83,7 +83,7 @@ class FrameController extends EventEmitter
             @model =
                 hands : []
                 gestures : []
-                timestamp : frame.timestamp
+                timestamp : frame.timestamp 
             for hand in frame.hands
                 if(config.stabilize)
                     console.log "Stabilized position in use!"
@@ -106,7 +106,7 @@ class FrameController extends EventEmitter
                         middleFinger : hand.middleFinger.extended
                         ringerFinger : hand.ringFinger.extended
                         pinky : hand.pinky.extended
-                    position: palmPosition
+                    position : palmPosition
                     grabStrength : hand.grabStrength
                     pinchStrength : pinchStrength
                     pinchingFinger : pinchingFinger
@@ -121,9 +121,9 @@ class FrameController extends EventEmitter
                     state : gesture.state
                 @model.gestures.push gestureModel
             @emit 'update', @model
+
         console.log "Processed frame: ", frame.id
         return
-
 
 #
 # Socket

@@ -11,11 +11,15 @@ class GestureController
     constructor: ->
         @signs = window.config.signs
         @recipes = window.config.recipes
+        # @lastFrame
+        # @currentFrame
+        @startTime = null
         # Milliseconds. Release mouse buttons if no new data is received during this time frame.
         #@timeout = window.config.timeout
 
     assertSign: (sign, frameData) =>
         # Assert true unless a filter statement is found
+
         sign_ok = true
 
         for handModel in frameData.hands
@@ -59,14 +63,27 @@ class GestureController
                         sign_ok = false
         return sign_ok
 
+
     parseGestures: (model) =>
+        feedback = window.feedback
         manager = window.actionHero
         manager.position = model.hands[0].position
-        # Timeout handling
-        #@timestamp = model.timestamp
-        #if(@timer)
-        #    clearTimeout(@timer)
-        #@timer = setTimeout()
+
+        #@currentFrame = model.frame().id
+
+        # If this is the first time
+        if !@startTime?
+            @startTime = model.timestamp
+        else
+            @timestamp = model.timestamp
+
+        #   if @lastFrame is not model.id ->
+        #   @lastFrame = model.id
+
+        elapsedMS = model.timestamp - @startTime # Time elapsed in ms since a specific point
+        elapsedSeconds = elapsedMS / 1000000
+
+        window.feedback.time elapsedSeconds
 
         validSigns = []
         for signName,signData of @signs
