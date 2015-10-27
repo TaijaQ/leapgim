@@ -14,10 +14,13 @@ class FeedbackController
         audio = new Audio(clip)
         audio.play()
 
-    mouseStatus: (elem, status) ->
-        document.getElementById(elem).innerHTML = status
+    mouseStatus: (status) ->
+        document.getElementById('left').innerHTML = status
 
     time: (elapsed) ->
         document.getElementById('timer').innerHTML = elapsed
+
+    handVisible: (visible)->
+        document.getElementById('handVisible').innerHTML = visible
 
 window.FeedbackController = FeedbackController

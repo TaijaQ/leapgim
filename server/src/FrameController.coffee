@@ -21,6 +21,7 @@ class FrameController extends EventEmitter
     constructor: ->
         @timeout = 1000 # Timeout based on client timestamps
         @model = []
+        @time = -1
         console.log "Frame Controller initialized"
 
         # Sign, action, recipe
@@ -77,19 +78,24 @@ class FrameController extends EventEmitter
     processFrame: (frame) =>
         console.log "Processing frame..."
 
-        if not frame.valid or frame.hands is null or frame.hands.length is 0
-            console.log "Invalid frame or no hands detected"
+        @time = frame.timestamp
+
+        console.log "Time: ", @time
+     
+        if frame.invalid or frame.hands is null or frame.hands.length is 0
+            console.log "No hands detected or invalid frame."
         else
             @model =
                 hands : []
                 gestures : []
-                timestamp : frame.timestamp 
+                motions : []
+                timestamp : @time
             for hand in frame.hands
                 if(config.stabilize)
                     console.log "Stabilized position in use!"
                     position = hand.stabilizedPalmPosition
                 else 
-                    position = hand.palmPosition                  
+                    position = hand.palmPosition
                 palmPosition = @relative3DPosition(frame, position)
                 
                 pinchStrength = hand.pinchStrength
@@ -98,8 +104,19 @@ class FrameController extends EventEmitter
                 else
                     pinchingFinger = null
 
+                # Movement
+                motionModel =
+                    radius : hand.sphereRadius
+                    speed : hand.palmVelocity
+                    pitch :	hand.pitch
+                    roll  : hand.roll
+                    direction : hand.direction
+                @model.motions.push motionModel
+
                 handModel =
                     type : hand.type
+                    visible : hand.timeVisible
+                    confidence : hand.confidence
                     extendedFingers: 
                         thumb : hand.thumb.extended
                         indexFinger : hand.indexFinger.extended
@@ -195,6 +212,7 @@ consume = () ->
     # Skip invalid frame processing
     if(frame is null or frame.valid is false)
         return
+
     frameController.processFrame(frame)
     console.log "Consumed frame ", frame.id
 
