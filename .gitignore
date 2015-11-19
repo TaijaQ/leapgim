@@ -3,3 +3,5 @@ build/
 npm-debug.log
 output_old/
 output/
+travis.yml
+appveyor.yml
